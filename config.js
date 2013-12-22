@@ -1,6 +1,6 @@
 exports.config = {
   protocol: 'https',
-  port: 3443,
+  port: 443,
   host: 'localhost',
   ssl: {
     cert: 'certs/localhost.cert',

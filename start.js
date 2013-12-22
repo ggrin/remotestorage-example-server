@@ -21,7 +21,7 @@ var portServers = {};
 var hostnameCertificates = {};
 
 function sniCallback(hostname) {
-  console.log('using Certificates for',hostname,hostnameCertificates[hostname]);
+  // console.log('using Certificates for',hostname,hostnameCertificates[hostname]);
   return hostnameCertificates[hostname];
 }
 
@@ -113,6 +113,7 @@ for(var port in portServers) {
   if(protocol === 'https')
     endpoints.forEach(function(endpoint) {
       var host = endpoint.host;
+      console.log('adding context for',host)
       server.addContext(host, hostnameCertificates[host]);
     })
   console.log("Done. Installed routes: "+ portServers[port].endpoints.map(function(endpoint) { 
