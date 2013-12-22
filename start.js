@@ -1,3 +1,4 @@
+#!/usr/bin/node
 
 var url = require('url');
 var fs = require('fs');
@@ -26,7 +27,7 @@ function sniCallback(hostname) {
 
 var READ_CERT_KEYS = { cert: true, key: true, ca: true };
 function maybeReadCert(key, value) {
-  return READ_CERT_KEYS[key] ? fs.readFileSync(value, 'UTF-8') : value;
+  return READ_CERT_KEYS[key] ? fs.readFileSync(value, 'UTF-8', console.log('read', key, value)) : value;
 }
 
 ['auth', 'storage', 'webfinger'].forEach(function(server) {
@@ -55,22 +56,24 @@ function maybeReadCert(key, value) {
     throw new Error("Invalid configuration! Can't run server on port " + port + " with protocol " + config[server].protocol + ", already configured for protocol " + portServers[port].protocol);
   }
   if(config[server].protocol === 'https' && config[server].ssl) {
-    if(hostnameCertificates[config[server].host]) {
+    var old_ssl = hostnameCertificates[config[server].host];
+    var new_ssl = config[server].ssl
+    if(old_ssl && !helpers.cmpObjs(old_ssl, new_ssl) ) {
       throw new Error("[in " + server + "] Already have a certificate for " + config[server].host);
     }
-    var certs = {};
-    for(var key in config[server].ssl) {
-      certs[key] = maybeReadCert(key, config.ssl[key])
-    }
-    try {
-      hostnameCertificates[config[server].host] = crypto.createCredentials(certs).context;
-    } catch(e) {
-      console.error(e.message);
-      throw new Error("Failed to load certificates. Check your SSL configuration for hostname " + config[server].host + " (service: " + server + ")");
-    }
+    hostnameCertificates[config[server].host] = new_ssl;
   }
   portServers[port].endpoints.push(config[server]);
 });
+
+for( var host in hostnameCertificates) {
+  var cert = hostnameCertificates[host];
+  for(var key in cert) {
+    cert[key] = maybeReadCert(key, cert[key]); 
+  }
+  cert = crypto.createCredentials(cert).context;
+  hostnameCertificates[host] = cert;
+}
 
 function createHandler(protocol, endpoints, serverOptions) {
   var n = endpoints.length;
@@ -100,11 +103,19 @@ for(var port in portServers) {
     if(! config.ssl) {
       throw new Error("No global SSL configuration given. This is required as fallback. Just choose a random one of your other certificate if you are unsure.");
     }
+
     for(var key in config.ssl) {
-      serverOptions[key] = maybeReadCert(key, config.ssl[key]);
+      serverOptions[key] = config.ssl[key];
     }
   }
 
-  PROTOCOL_HANDLERS[protocol].createServer.apply(PROTOCOL_HANDLERS[protocol], createHandler(protocol, endpoints, serverOptions)).listen(port);
-  console.log("Done. Installed routes: " + portServers[port].endpoints.map(function(endpoint) { return (endpoint.host || '') + endpoint.path; }).join(', '));
+  var server = PROTOCOL_HANDLERS[protocol].createServer.apply(PROTOCOL_HANDLERS[protocol], createHandler(protocol, endpoints, serverOptions)).listen(port);
+  if(protocol === 'https')
+    endpoints.forEach(function(endpoint) {
+      var host = endpoint.host;
+      server.addContext(host, hostnameCertificates[host]);
+    })
+  console.log("Done. Installed routes: "+ portServers[port].endpoints.map(function(endpoint) { 
+    return (endpoint.host || '') + endpoint.path; 
+  }).join(', '));
 }

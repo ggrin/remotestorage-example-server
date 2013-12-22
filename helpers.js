@@ -1,5 +1,21 @@
 
 var helpers = {
+  // obj helpers
+  cmpObjs: function(a,b) {
+    if(typeof a !== 'object' || typeof b !== 'object' )
+      throw new Error("not an object "+ a +', '+ b);
+    for(var k in a) {
+      if(typeof a[k] == 'object' && typeof b[k] == 'object' && !helpers.cmpObjs(a[k],b[k]))
+        return false;
+      if(a[k] !== b[k])
+        return false
+    }
+    for(var k in b) {
+      if( !(k in a))
+        return false
+    }
+    return true;
+  },
 
   // bla
 
