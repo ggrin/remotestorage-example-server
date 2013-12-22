@@ -4,6 +4,7 @@ var log = helpers.log, writeJSON = helpers.writeJSON;
 
 function webfinger(req, res, urlObj) {
   log('WEBFINGER');
+  var userName;
   if(urlObj.query['resource']) {
     userAddress = urlObj.query['resource'].substring('acct:'.length);
     userName = userAddress.split('@')[0];
