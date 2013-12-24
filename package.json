@@ -1,7 +1,7 @@
 {
   "name": "remotestorage-example-server",
   "desc": "remoteStorage example server: providing webfinger, oauth and storage without any persistence",
-  "version": "0.0.1-pre",
+  "version": "0.0.2-pre",
   "private": false,
   "license": "MIT",
   "repository": {
