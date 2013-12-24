@@ -4,7 +4,19 @@ var url = require('url');
 var fs = require('fs');
 var crypto = require('crypto');
 var helpers = require('./helpers');
-var config = require('./config').config;
+
+var pos = process.argv.indexOf('-c')
+var cfile = './config';
+if(pos > 0)
+  cfile = process.argv[pos+1];
+try {
+  var config = require(cfile).config;
+} catch(e) {
+  console.error("can't load config :",cfile);
+  throw e;
+}
+
+
 
 var PROTOCOL_HANDLERS = {
   http: require('http'),
@@ -22,7 +34,7 @@ var hostnameCertificates = {};
 
 function sniCallback(hostname) {
   // console.log('using Certificates for',hostname,hostnameCertificates[hostname]);
-  return hostnameCertificates[hostname];
+//  return hostnameCertificates[hostname];
 }
 
 var READ_CERT_KEYS = { cert: true, key: true, ca: true };
