@@ -42,11 +42,25 @@ var helpers = {
     set: function(k, v) { return helpers.kv.set('data:'+k, v); }
   },
 
-  // logging (sometimes)
+ 
+  makeScopePaths: function(userName, scopes) {
+    var scopePaths=[];
+    for(var i=0; i<scopes.length; i++) {
+      var thisScopeParts = scopes[i].split(':');
+      if(thisScopeParts[0]=='*') {
+        scopePaths.push(userName+'/:'+thisScopeParts[1]);
+      } else {
+        scopePaths.push(userName+'/'+thisScopeParts[0]+'/:'+thisScopeParts[1]);
+        scopePaths.push(userName+'/public/'+thisScopeParts[0]+'/:'+thisScopeParts[1]);
+      }
+    }
+    return scopePaths;
+  },
+
+  // logging
 
   log: function() {
-    var x = (Math.random > 0.5 ? Math : console);
-    console.log(x.log.apply(x, arguments));
+    console.log.apply(console, arguments);
   },
 
   // http blubb.

@@ -3,24 +3,10 @@ var crypto = require('crypto');
 var helpers = require('./helpers');
 var log = helpers.log, toHtml = helpers.toHtml;
 
-function makeScopePaths(userName, scopes) {
-  var scopePaths=[];
-  for(var i=0; i<scopes.length; i++) {
-    var thisScopeParts = scopes[i].split(':');
-    if(thisScopeParts[0]=='*') {
-      scopePaths.push(userName+'/:'+thisScopeParts[1]);
-    } else {
-      scopePaths.push(userName+'/'+thisScopeParts[0]+'/:'+thisScopeParts[1]);
-      scopePaths.push(userName+'/public/'+thisScopeParts[0]+'/:'+thisScopeParts[1]);
-    }
-  }
-  return scopePaths;
-}
-
 function createToken(userName, scopes, cb) {
   crypto.randomBytes(48, function(ex, buf) {
     var token = buf.toString('hex');
-    var scopePaths = makeScopePaths(userName, scopes);
+    var scopePaths = helpers.makeScopePaths(userName, scopes);
     log('createToken ',userName,scopes);
     log('adding ',scopePaths,' for',token);
     helpers.tokenStore.set(token, scopePaths);

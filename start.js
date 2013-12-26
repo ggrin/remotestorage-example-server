@@ -87,6 +87,14 @@ for( var host in hostnameCertificates) {
   hostnameCertificates[host] = cert;
 }
 
+for(var user in config.initialTokens) {
+  for(var token in config.initialTokens[user]) {
+    var scopePaths = helpers.makeScopePaths(user, config.initialTokens[user][token])
+    helpers.tokenStore.set(token, scopePaths);
+    helpers.log('adding Initial token', token, 'for', scopePaths);
+  }
+}
+
 function createHandler(protocol, endpoints, serverOptions) {
   var n = endpoints.length;
   var f = function(req, res) {
