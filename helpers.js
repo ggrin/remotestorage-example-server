@@ -17,7 +17,7 @@ var helpers = {
     return true;
   },
 
-  // bla
+  // html helpers
 
   toHtml: function(str) {
     return str
@@ -26,23 +26,39 @@ var helpers = {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
   },
+
+  // storage
   kv: (function() {
     var store = {};
     return {
       set: function(k, v) { store[k] = v; },
-      get: function(k) { return store[k]; }
+      get: function(k) { return store[k]; },
+      clear: function(prefix) { 
+        if(!prefix) {
+          store = {};
+          return
+        } 
+        else {
+          for(var item in store) {
+            if(item.slice(prefix.length) == prefix)
+              delete store[item]
+          } 
+        }
+      }
     };
   })(),
   tokenStore: {
     get: function(k) { return helpers.kv.get('token:'+k); },
-    set: function(k, v) { return helpers.kv.set('token:'+k, v); }
+    set: function(k, v) { return helpers.kv.set('token:'+k, v); },
+    clear: function() { return helpers.kv.clear('token:')}
   },
   dataStore: {
     get: function(k) { return helpers.kv.get('data:'+k); },
-    set: function(k, v) { return helpers.kv.set('data:'+k, v); }
+    set: function(k, v) { return helpers.kv.set('data:'+k, v); },
+    clear: function() { return helpers.kv.clear('data:')}
   },
 
- 
+  // scopes
   makeScopePaths: function(userName, scopes) {
     var scopePaths=[];
     for(var i=0; i<scopes.length; i++) {
@@ -57,13 +73,24 @@ var helpers = {
     return scopePaths;
   },
 
-  // logging
-
-  log: function() {
-    console.log.apply(console, arguments);
+  addToken: function(token, scope) {
+    helpers.tokenStore.set(token, scope);
   },
 
-  // http blubb.
+  // logging
+  _log: true,
+  enableLogs: function() {
+    _log = true;
+  },
+  disableLogs: function() {
+    _log = false;
+  },
+  log: function() {
+    if(_log)
+      console.log.apply(console, arguments);
+  },
+
+  // http write
 
   writeHead: function(res, status, origin, revision, contentType, contentLength) {
     console.log('writeHead', status, origin, revision, contentType, contentLength);
