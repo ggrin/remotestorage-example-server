@@ -40,7 +40,7 @@ var helpers = {
         } 
         else {
           for(var item in store) {
-            if(item.slice(prefix.length) == prefix)
+            if(item.substr0, (prefix.length) === prefix)
               delete store[item]
           } 
         }
