@@ -26,7 +26,7 @@ var PROTOCOL_HANDLERS = {
 var HANDLERS = {
   auth: require('./oauth-server'),
   webfinger: require('./webfinger-server'),
-  storage: require('./remotestorage-server').createServer(helpers.tokenStore, helpers.dataStore)
+  storage: require('./remotestorage-server').createHandler(helpers.tokenStore, helpers.dataStore)
 };
 
 var portServers = {};

@@ -40,7 +40,7 @@ var helpers = {
         } 
         else {
           for(var item in store) {
-            if(item.substr0, (prefix.length) === prefix)
+            if(item.substr(0, (prefix.length)) === prefix)
               delete store[item]
           } 
         }
@@ -80,13 +80,13 @@ var helpers = {
   // logging
   _log: true,
   enableLogs: function() {
-    _log = true;
+    helpers._log = true;
   },
   disableLogs: function() {
-    _log = false;
+    helpers._log = false;
   },
   log: function() {
-    if(_log)
+    if(helpers._log)
       console.log.apply(console, arguments);
   },
 
