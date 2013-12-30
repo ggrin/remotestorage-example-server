@@ -1,15 +1,17 @@
 exports.config = {
   protocol: 'https',
-  port: 443,
+  port: 433,
   host: 'localhost',
   ssl: {
     cert: 'certs/localhost.cert',
     key: 'certs/localhost.key'
   },
 
-  defaultUserName: 'me',
   initialTokens: {
-    '4eb4b398c36e62da87469133e2f0cb3f9574d5b3865051': [':rw']
+    me: {
+      '4eb4b398c36e62da87469133e2f0cb3f9574d5b3865051': [':rw'],
+      'c0ffeebabe': [':rw']
+    }
   },
 
   auth: {

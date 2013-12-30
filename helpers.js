@@ -33,6 +33,9 @@ var helpers = {
     return {
       set: function(k, v) { store[k] = v; },
       get: function(k) { return store[k]; },
+      grep: function(pattern) {
+        return Object.keys(store).filter(pattern.test.bind(pattern));
+      },
       clear: function(prefix) { 
         if(!prefix) {
           store = {};
